@@ -1,0 +1,18 @@
+{
+  "type": "module",
+  "name": "arith",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "prettier": "^3.6.2",
+    "vitest": "^3.2.4"
+  }
+}

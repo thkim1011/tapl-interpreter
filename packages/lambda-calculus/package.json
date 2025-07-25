@@ -1,0 +1,16 @@
+{
+  "name": "lambda-calculus",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "antlr": "antlr4ts -Dlanguage=TypeScript -o src/generated"
+  },
+  "dependencies": {
+    "antlr4": "^4.13.2"
+  },
+  "devDependencies": {
+    "antlr4ts-cli": "^0.5.0-alpha.4"
+  }
+}

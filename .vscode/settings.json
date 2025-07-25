@@ -1,0 +1,7 @@
+{
+  "eslint.workingDirectories": [
+    "packages/frontend",
+    "packages/arith"
+    // add other packages if needed
+  ]
+}
