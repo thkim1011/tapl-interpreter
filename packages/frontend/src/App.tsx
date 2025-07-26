@@ -5,14 +5,22 @@ import { Evaluation } from "./components/Evaluation";
 import { useMonaco } from "./hooks/useMonaco";
 import React from "react";
 import { Provider } from "./components/ui/provider";
+import type { Language } from "./types";
+
+const SAMPLE_PROGRAMS: Record<Language, string> = {
+  arith: "if iszero zero then true else false",
+  lambdaCalculus: "",
+};
 
 function App() {
   const monaco = useMonaco();
 
   const [rawTerm, setRawTerm] = React.useState<string | null>(null);
-  const [language, setLanguage] = React.useState<"arith" | "lambdaCalculus">(
-    "arith"
-  );
+  const [language, setLanguage] = React.useState<Language>("arith");
+
+  React.useEffect(() => {
+    monaco.setValue(SAMPLE_PROGRAMS[language]);
+  }, [language, monaco]);
 
   return (
     <Provider>

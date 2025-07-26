@@ -31,9 +31,14 @@ export const useMonaco = () => {
     };
   }, [monacoEl]);
 
+  const setValue = React.useCallback((value: string) => {
+    editorRef.current?.setValue(value);
+  }, []);
+
   return {
     setMonacoEl,
     getEditorContent,
+    setValue,
   };
 };
 
