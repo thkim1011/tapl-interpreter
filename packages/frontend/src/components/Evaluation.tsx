@@ -29,7 +29,7 @@ export const Evaluation: React.FC<EvaluationProps> = ({ rawTerm }) => {
   }, [rawTerm]);
 
   return (
-    <Container className="border-1 border-gray-400">
+    <Container>
       {content.status === "success" && <StepByStep term={content.term} />}
       {content.status === "error" && content.message}
       {content.status === "idle" && "Press evaluate to get started"}

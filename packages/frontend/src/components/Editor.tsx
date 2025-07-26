@@ -15,7 +15,6 @@ export const Editor: React.FC<EditorProps> = ({ monaco, onEvaluate }) => {
     <Container>
       <div
         ref={monaco.setMonacoEl}
-        className="border-1 border-gray-500"
         style={{ width: "100%", height: "100%" }}
       ></div>
       <ButtonContainer>

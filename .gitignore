@@ -12,6 +12,7 @@ dist
 dist-ssr
 generated
 *.local
+.antlr
 
 # Editor directories and files
 .DS_Store

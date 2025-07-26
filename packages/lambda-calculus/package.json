@@ -5,10 +5,11 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "antlr": "antlr4ts -Dlanguage=TypeScript -o src/generated"
+    "antlr": "antlr4ts -visitor -o src/generated LambdaCalculus.g4"
   },
   "dependencies": {
-    "antlr4": "^4.13.2"
+    "antlr4ts": "^0.5.0-alpha.4",
+    "vitest": "^3.2.4"
   },
   "devDependencies": {
     "antlr4ts-cli": "^0.5.0-alpha.4"
