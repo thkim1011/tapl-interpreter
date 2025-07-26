@@ -4,27 +4,33 @@ import { Editor } from "./components/Editor";
 import { Evaluation } from "./components/Evaluation";
 import { useMonaco } from "./hooks/useMonaco";
 import React from "react";
+import { Provider } from "./components/ui/provider";
 
 function App() {
   const monaco = useMonaco();
 
   const [rawTerm, setRawTerm] = React.useState<string | null>(null);
+  const [language, setLanguage] = React.useState<"arith" | "lambdaCalculus">(
+    "arith"
+  );
 
   return (
-    <Container>
-      <Header />
-      <ContentContainer>
-        <Editor monaco={monaco} onEvaluate={setRawTerm} />
-        <Evaluation rawTerm={rawTerm} />
-      </ContentContainer>
-    </Container>
+    <Provider>
+      <Container>
+        <Header language={language} setLanguage={setLanguage} />
+        <ContentContainer>
+          <Editor monaco={monaco} onEvaluate={setRawTerm} />
+          <Evaluation rawTerm={rawTerm} />
+        </ContentContainer>
+      </Container>
+    </Provider>
   );
 }
 
 const ContentContainer = styled.div`
-  padding: 32px;
+  padding: 16px 32px 16px 32px;
   display: flex;
-  gap: 32px;
+  gap: 16px;
   flex-grow: 1;
 `;
 

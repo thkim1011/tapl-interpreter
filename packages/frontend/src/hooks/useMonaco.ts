@@ -14,11 +14,14 @@ export const useMonaco = () => {
   // Initialize Monaco Editor when monacoEl is ready.
   React.useEffect(() => {
     if (monacoEl && !editorRef.current) {
+      monaco.editor.setTheme("dark");
       editorRef.current = monaco.editor.create(monacoEl, {
         value: ["function x() {", '\tconsole.log("Hello world!");', "}"].join(
           "\n"
         ),
         language: "typescript",
+        theme: "vs-dark",
+        automaticLayout: true,
       });
     }
 
