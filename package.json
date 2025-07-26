@@ -4,6 +4,10 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "build-grammar": "cd packages/lambda-calculus && yarn antlr",
+    "build": "cd packages/frontend && yarn build"
+  },
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT"
