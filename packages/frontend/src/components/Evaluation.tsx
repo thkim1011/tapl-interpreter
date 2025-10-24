@@ -29,7 +29,7 @@ export const Evaluation = <L extends Language>({
       }
     } catch (e) {
       if (e instanceof Error) {
-        return { status: "error", message: e.message };
+        return { status: "error", message: `${e.message}\n${e.stack}` };
       }
       return { status: "error", message: "unknown" };
     }
