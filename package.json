@@ -7,6 +7,7 @@
   "scripts": {
     "build-grammar": "cd packages/lambda-calculus && yarn antlr",
     "build-arith": "cd packages/arith && yarn build",
+    "build-lc": "cd packages/lambda-calculus && yarn build",
     "build": "cd packages/frontend && yarn build"
   },
   "version": "1.0.0",

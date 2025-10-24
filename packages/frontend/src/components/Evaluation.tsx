@@ -1,16 +1,22 @@
 import React from "react";
 import styled from "styled-components";
-import { evaluate1, isValue, parse, print, type Term } from "arith";
 import { Toolbar } from "./evaluation/Toolbar";
+import type { Language } from "../types";
+import { useLanguage, type LanguageTermRecord } from "../hooks/useLanguage";
 
-interface EvaluationProps {
+interface EvaluationProps<L extends Language> {
   rawTerm: string | null;
+  language: L;
 }
 
-export const Evaluation: React.FC<EvaluationProps> = ({ rawTerm }) => {
+export const Evaluation = <L extends Language>({
+  rawTerm,
+  language,
+}: EvaluationProps<L>) => {
   const [currentStep, setCurrentStep] = React.useState(0);
+  const { evaluate1, isValue, parse, print } = useLanguage(language);
   const content = React.useMemo<
-    | { status: "success"; term: Term }
+    | { status: "success"; term: LanguageTermRecord[L] }
     | { status: "error"; message: string }
     | { status: "idle" }
   >(() => {
@@ -27,7 +33,7 @@ export const Evaluation: React.FC<EvaluationProps> = ({ rawTerm }) => {
       }
       return { status: "error", message: "unknown" };
     }
-  }, [rawTerm]);
+  }, [parse, rawTerm]);
 
   // Cache every step of the evaluation.
   const steps = React.useMemo(() => {

@@ -28,7 +28,7 @@ function App() {
         <Header language={language} setLanguage={setLanguage} />
         <ContentContainer>
           <Editor monaco={monaco} onEvaluate={setRawTerm} />
-          <Evaluation rawTerm={rawTerm} />
+          <Evaluation rawTerm={rawTerm} language={language} />
         </ContentContainer>
       </Container>
     </Provider>
