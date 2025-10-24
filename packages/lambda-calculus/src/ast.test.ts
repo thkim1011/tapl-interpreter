@@ -12,6 +12,8 @@ describe("ast tests", () => {
       "lambda. lambda. lambda. lambda. 3 1 (2 0 1)",
     ],
     ["x y z", "0 1 2"],
+    ["lambda x. lambda x. x", "lambda. lambda. 0"],
+    ["lambda x. (lambda y. y) x", "lambda. (lambda. 0) 0"],
   ])("should parse a simple term", (termString, namelessRepr) => {
     const ast = parseLC(termString);
     expect(print(ast)).toEqual(namelessRepr);

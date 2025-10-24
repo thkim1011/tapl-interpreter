@@ -26,23 +26,8 @@ export type LCTerm =
     }
   | {
       type: "abstraction";
-      body: LCTerm;
-    }
-  | {
-      type: "variable";
-      variable: number;
-    };
-
-type LCTermInternal =
-  | {
-      type: "application";
-      function: LCTermInternal;
-      argument: LCTermInternal;
-    }
-  | {
-      type: "abstraction";
       variableName: string;
-      body: LCTermInternal;
+      body: LCTerm;
     }
   | {
       type: "variable";
@@ -59,7 +44,7 @@ export const parseLC = (input: string): LCTerm => {
 
   const visitor = new ASTVisitor();
   const auxiliary = visitor.visit(tree);
-  return convertToIndices(auxiliary);
+  return populateIndices(auxiliary);
 };
 
 // The ASTVisitor must return three things:
@@ -69,87 +54,91 @@ export const parseLC = (input: string): LCTerm => {
 // As an auxiliary helper, we'll also return a stack of bound variables
 // in the current context.
 
-class ASTVisitor implements LambdaCalculusVisitor<LCTermInternal> {
-  visit(tree: ParseTree): LCTermInternal {
+class ASTVisitor implements LambdaCalculusVisitor<LCTerm> {
+  visit(tree: ParseTree): LCTerm {
     return tree.accept(this);
   }
-  visitTerm(ctx: TermContext): LCTermInternal {
+  visitTerm(ctx: TermContext): LCTerm {
     return (
       ctx.abstraction()?.accept(this) ??
       ctx.application()?.accept(this) ??
       ctx.atom()?.accept(this)!
     );
   }
-  visitChildren(node: RuleNode): LCTermInternal {
+  visitChildren(node: RuleNode): LCTerm {
     throw new Error("Not implemented");
   }
-  visitTerminal(node: TerminalNode): LCTermInternal {
+  visitTerminal(node: TerminalNode): LCTerm {
     throw new Error("Not implemented");
   }
-  visitErrorNode(node: ErrorNode): LCTermInternal {
+  visitErrorNode(node: ErrorNode): LCTerm {
     throw new Error("Not implemented");
   }
-  visitProg(ctx: ProgContext): LCTermInternal {
+  visitProg(ctx: ProgContext): LCTerm {
     return ctx.term().accept(this);
   }
-  visitAbstraction(ctx: AbstractionContext): LCTermInternal {
+  visitAbstraction(ctx: AbstractionContext): LCTerm {
     const variableName = ctx.ID().text;
     const body = ctx.term().accept(this);
     return { type: "abstraction", variableName, body };
   }
-  visitApplication(ctx: ApplicationContext): LCTermInternal {
+  visitApplication(ctx: ApplicationContext): LCTerm {
     return ctx.accept(this);
   }
-  visitAppLeftRecursion(ctx: AppLeftRecursionContext): LCTermInternal {
+  visitAppLeftRecursion(ctx: AppLeftRecursionContext): LCTerm {
     return {
       type: "application",
       function: ctx.application().accept(this),
       argument: ctx.atom().accept(this),
     };
   }
-  visitAppBaseCase(ctx: AppBaseCaseContext): LCTermInternal {
+  visitAppBaseCase(ctx: AppBaseCaseContext): LCTerm {
     return {
       type: "application",
       function: ctx.atom(0).accept(this),
       argument: ctx.atom(1).accept(this),
     };
   }
-  visitAtom(ctx: AtomContext): LCTermInternal {
+  visitAtom(ctx: AtomContext): LCTerm {
     return ctx.variable()?.accept(this) ?? ctx.term()?.accept(this)!;
   }
-  visitVariable(ctx: VariableContext): LCTermInternal {
+  visitVariable(ctx: VariableContext): LCTerm {
     const variableName = ctx.ID().text;
     return { type: "variable", variableName, variable: 0 };
   }
 }
 
 // Converts variable names to de Brujin indices and returns a naming
-// context for free variables.
-const convertToIndices = (termInternal: LCTermInternal): LCTerm => {
-  const stack = [termInternal];
-  const boundVariables = [];
-  const freeVariables = [];
+// context for free variables. Would prefer to not have side-effects
+// but I am bad at programming.
+const populateIndices = (termInternal: LCTerm): LCTerm => {
+  // Track the current node we're traversing in addition to the list
+  // of bound variables in the context.
+  const stack: [LCTerm, string[]][] = [[termInternal, []]];
+  const freeVariables: string[] = [];
   while (stack.length) {
-    const term = stack.pop()!;
+    const [term, boundVariables] = stack.pop()!;
     switch (term.type) {
       case "abstraction":
-        boundVariables.push(term.variableName);
-        stack.push(term.body);
+        stack.push([term.body, [term.variableName, ...boundVariables]]);
         break;
       case "application":
-        stack.push(term.argument, term.function);
+        stack.push(
+          [term.argument, boundVariables],
+          [term.function, boundVariables]
+        );
         break;
       case "variable":
         const { variableName } = term;
-        const index =
-          boundVariables.length -
-          1 -
-          boundVariables.findIndex((n) => n === variableName);
-        if (index === boundVariables.length) {
-          term.variable = index + freeVariables.length;
-          freeVariables.push(variableName);
+        const boundIndex = boundVariables.findIndex((n) => n === variableName);
+        const freeIndex = freeVariables.findIndex((n) => n === variableName);
+        if (boundIndex !== -1) {
+          term.variable = boundIndex;
+        } else if (freeIndex !== -1) {
+          term.variable = boundVariables.length + freeIndex;
         } else {
-          term.variable = index;
+          term.variable = boundVariables.length + freeVariables.length;
+          freeVariables.unshift(variableName);
         }
         break;
     }
